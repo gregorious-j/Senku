@@ -1,5 +1,3 @@
-![SenkuLogo]()
-
 # Senku
 
 A multipurpose Discord bot with a focus on music (for now).
