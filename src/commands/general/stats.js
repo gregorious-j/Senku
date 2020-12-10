@@ -1,7 +1,7 @@
-const { COLOR_THEME } = require('../../../config.json');
-const Discord = require('discord.js');
-const os = require('os-utils');
-const { Utilities } = require('../../util/utilities');
+const { COLOR_THEME } = require('../../../config.json')
+const Discord = require('discord.js')
+const os = require('os-utils')
+const { Utilities } = require('../../util/utilities')
 
 module.exports = {
     name: 'stats',
@@ -12,7 +12,6 @@ module.exports = {
     args: false,
     category: 'general',
     execute(message, args, queues, manager) {
-
         const embed = new Discord.MessageEmbed()
             .setColor(COLOR_THEME)
             .setDescription('Profiling...')
@@ -34,7 +33,5 @@ module.exports = {
                 Utilities.log(`\nCPU: ${stats.cpu}%\nRAM: ${stats.ram}MB\nUptime: ${Utilities.format(stats.uptime)}\nPlatform: ${stats.platform}`)
             })
         })
-
-       
     }
 }

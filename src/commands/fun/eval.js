@@ -4,7 +4,7 @@ const Discord = require('discord.js');
 module.exports = {
     name: 'eval',
     aliases: ['evaluate'],
-    description: `Execute some JS code using Senku`,
+    description: `Execute some JS code using Senku. No, it isn't safe`,
     usage: `\`${prefix}eval <js expression>\``,
     permissionRequired: 4,
     args: true,

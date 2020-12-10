@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
+const Discord = require('discord.js')
+const fs = require('fs')
+const { ClientStatusMessage } = require('../../util/status')
 
-const fs = require('fs');
-const { ClientStatusMessage } = require('../../util/status');
 module.exports = {
     name: 'prefix',
     description: 'Change Senku\'s command prefix. If no new prefix is provided, the prefix will be reset to the default (\`?\`)',
@@ -24,15 +24,11 @@ module.exports = {
         }
         fs.writeFile(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", JSON.stringify(prefixes), err => {
             if(err) {
-                console.log(err);
+                console.log(err)
                 return new ClientStatusMessage(message, 'ERROR', 'Error writing to file');
             }
             console.log(JSON.stringify(prefixes));
         })
-        return new ClientStatusMessage(message, 'CUSTOM', `Successfully changed the prefix to \`\`\`${prefixes[message.guild.id].prefix}\`\`\``, 'Prefix changed')
-        
-        
-        
-        
+        return new ClientStatusMessage(message, 'CUSTOM', `Successfully changed the prefix to \`\`\`${prefixes[message.guild.id].prefix}\`\`\``, 'Prefix changed')   
     }
-};
+}

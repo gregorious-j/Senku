@@ -1,7 +1,6 @@
-const { prefix, COLOR_THEME } = require('../../../config.json');
-const urban = require('urban');
-const Discord = require('discord.js');
-
+const { prefix, COLOR_THEME } = require('../../../config.json')
+const urban = require('urban')
+const Discord = require('discord.js')
 
 module.exports = {
     name: 'urban',
@@ -23,15 +22,15 @@ module.exports = {
                     if(json.example.length >= 1024) {
                        embed.addField('Example', json.example.replace(/([[-\]])+/g, '').substring(0, 1020) + '...');
                     } else {
-                        embed.addField('Example', json.example.replace(/([[-\]])+/g, ''));
+                        embed.addField('Example', json.example.replace(/([[-\]])+/g, ''))
                     }
                     message.channel.send(embed); 
                 } catch (error) {
                     console.error(error);
-                    message.reply('Error encountered when sending definition');
+                    message.reply('there was an error encountered when sending this definition')
                 }
             } else {
-                message.reply('No definition found :(');
+                message.reply('there was no definition found :(')
             }
         })
     }

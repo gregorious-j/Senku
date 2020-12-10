@@ -2,6 +2,7 @@
 const gis = require('g-i-s');
 const { prefix } = require("../../../config.json");
 const Discord = require("discord.js");
+const { Utilities } = require('../../util/utilities');
 
 module.exports = {
     name: 'image',
@@ -14,16 +15,16 @@ module.exports = {
     async execute(message, args, queues) {
         await gis(args.join(' '), (error, results) => {
             if (error) {
-                console.log(error);
+                Utilities.log(error)
             }
             else {
                 try {
-                    const embed = new Discord.MessageEmbed().setImage(results[0].url).setColor('#03fcc2');
-                    message.channel.send(embed);
+                    const embed = new Discord.MessageEmbed().setImage(results[0].url).setColor('#03fcc2')
+                    message.channel.send(embed)
                 } catch(e) {
-                    console.log(e);
+                    Utilities.log(e)
                 }
             }
-        });
+        })
     }
 }

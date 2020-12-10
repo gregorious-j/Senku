@@ -1,5 +1,5 @@
-const { prefix, COLOR_THEME } = require('../../../config.json');
-const { ClientStatusMessage } = require('../../util/status');
+const { prefix, COLOR_THEME } = require('../../../config.json')
+const { ClientStatusMessage } = require('../../util/status')
 
 module.exports = {
     name: 'seek',
@@ -10,19 +10,19 @@ module.exports = {
     args: true,
     category: 'music',
     execute(message, args, queues) {
-        const vc = message.member.voice.channel;
-        const player = queues.get(message.guild.id);
+        const vc = message.member.voice.channel
+        const player = queues.get(message.guild.id)
         if(!player) {
             return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, there is no player to seek.`)
         }
         if (vc != player.getVoiceChannel()) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't seek without joining the correct voice channel.`);
+            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't seek without joining the correct voice channel.`)
         }
-        let time = args.join(' ');
+        let time = args.join(' ')
         player.seek(time).then(time_ms => {
-            player.displayNowPlaying(time_ms);
+            player.displayNowPlaying(time_ms)
         }, fail => {
-            message.reply(`couldn't seek the player.`); 
+            message.reply(`couldn't seek the player.`)
         })
     }
 }

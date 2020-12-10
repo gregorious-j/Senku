@@ -1,6 +1,5 @@
-const { prefix } = require('../../../config.json');
-const { Utilities } = require('../../util/utilities');
-
+const { prefix } = require('../../../config.json')
+const { Utilities } = require('../../util/utilities')
 
 module.exports = {
     name: 'time',
@@ -10,6 +9,6 @@ module.exports = {
     args: false,
     category: 'general',
     execute(message, args, queues) {
-        message.channel.send('It\'s ' + Utilities.getTime() + '.');
+        message.channel.send('It\'s ' + Utilities.getTime() + '.')
     }
 }

@@ -28,6 +28,5 @@ module.exports = {
                 return new ClientStatusMessage(message, 'ERROR', `Please enter a valid number.`)
             }
         }
-        
     }
 }

@@ -1,30 +1,32 @@
 const { SPECIAL_GUILDS } = require('../../../config.json');
 const { Utilities } = require('../../util/utilities');
 const Discord = require('discord.js');
+
+// this is horrible
 const pickles = [
-    "./assets/images/picklerick.png", // 2pts[0]
-    "./assets/images/Rick-and-Morty-Pickle-Rick-Inflatable-Chair.jpg", // 10pts [1]
-    "./assets/images/rickmug.jpg", // -1pts [2]
-    "./assets/images/rickplush.jpg", // 2pt [3]
-    "./assets/images/rickpanties.jpg", // 5pts [4]
-    "./assets/images/ricksocks.jpg", // -3pts [5]
-    "./assets/images/rickheadphones.jpg", // 2pts [6]
-    "./assets/images/rickshower.jpg",  // Worth 50 Pts, [7]
-    "./assets/images/phonecase.jpg", // 2 pts [8]
-    "./assets/images/pop.jpg", // 2 pts [9]
-    "./assets/images/rickbackpack.jpg", // 3pts [10]
-    "./assets/images/rickhat.jpg", // 3pts[11]
-    "./assets/images/rickshirt.jpg", //2pts [12]
-    "./assets/images/slippers.jpg",// -1pt [13]
-    "./assets/images/airpod.jpg", // 2pts [14]
-    "./assets/images/tikicup.jpg",
-    "./assets/images/towel.jpg",
-    "./assets/images/rick_curtain.jpg",
-    "./assets/images/pickledick.jpg",
-    "./assets/images/rickcondom.jpg",
-    "./assets/images/moneyclip.jpg",
-    "./assets/images/waterbottle.jpg",
-    "./assets/images/ricksocks2.jpg"
+    "./assets/ricks/picklerick.png", // 2pts[0]
+    "./assets/ricks/Rick-and-Morty-Pickle-Rick-Inflatable-Chair.jpg", // 10pts [1]
+    "./assets/ricks/rickmug.jpg", // -1pts [2]
+    "./assets/ricks/rickplush.jpg", // 2pt [3]
+    "./assets/ricks/rickpanties.jpg", // 5pts [4]
+    "./assets/ricks/ricksocks.jpg", // -3pts [5]
+    "./assets/ricks/rickheadphones.jpg", // 2pts [6]
+    "./assets/ricks/rickshower.jpg",  // Worth 50 Pts, [7]
+    "./assets/ricks/phonecase.jpg", // 2 pts [8]
+    "./assets/ricks/pop.jpg", // 2 pts [9]
+    "./assets/ricks/rickbackpack.jpg", // 3pts [10]
+    "./assets/ricks/rickhat.jpg", // 3pts[11]
+    "./assets/ricks/rickshirt.jpg", //2pts [12]
+    "./assets/ricks/slippers.jpg",// -1pt [13]
+    "./assets/ricks/airpod.jpg", // 2pts [14]
+    "./assets/ricks/tikicup.jpg",
+    "./assets/ricks/towel.jpg",
+    "./assets/ricks/rick_curtain.jpg",
+    "./assets/ricks/pickledick.jpg",
+    "./assets/ricks/rickcondom.jpg",
+    "./assets/ricks/moneyclip.jpg",
+    "./assets/ricks/waterbottle.jpg",
+    "./assets/ricks/ricksocks2.jpg"
 ]
 
 module.exports = {

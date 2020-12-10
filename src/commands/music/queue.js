@@ -1,6 +1,5 @@
-const { QueueWidget } = require('../../queue/queueWidget');
-const { prefix, COLOR_THEME } = require('../../../config.json');
-const Discord = require("discord.js");
+const { COLOR_THEME } = require('../../../config.json')
+const Discord = require("discord.js")
 
 module.exports = {
     name: 'queue',
@@ -11,19 +10,15 @@ module.exports = {
     args: false,
     category: 'music',
     execute(message, args, queues) {
-        const queue = queues.get(message.guild.id);
-        
+        const queue = queues.get(message.guild.id)
         if(!queue || queue.tracks.length == 0) {
             embed = new Discord.MessageEmbed()
             .setTitle('There is no queue :sob:')
             .setFooter('Use the play command to start a queue')
-            .setColor(COLOR_THEME);
-            message.channel.send(embed);
+            .setColor(COLOR_THEME)
+            message.channel.send(embed)
         } else {
-            queue.createWidget();
+            queue.createWidget()
         }
-            
-        
-        
     }
 }

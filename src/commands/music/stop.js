@@ -5,7 +5,7 @@ const { ClientStatusMessage } = require('../../util/status');
 module.exports = {
     name: 'stop',
     aliases: ['disconnect', 'leave', 'dc'],
-    description: 'Stop the playback of audio and reset the queue',
+    description: 'Stop the playback of audio and clear the queue',
     usage: `\`${prefix}stop\``,
     permissionRequired: 0,
     args: false,
