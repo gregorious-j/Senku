@@ -1,16 +1,20 @@
-const { prefix, COLOR_THEME } = require('../../../config.json');
+const { COLOR_THEME } = require('../../../config.json');
 const Discord = require('discord.js');
 
 module.exports = {
-    name: 'eval',
-    aliases: ['evaluate'],
-    description: `Execute some JS code using Senku. No, it isn't safe`,
-    usage: `\`${prefix}eval <js expression>\``,
-    permissionRequired: 4,
+    name: 'evaluate',
+    aliases: ['eval'],
+    description: `Execute JS code on Senku. Pls dont break him :pleading_face:`,
+    usage: `eval <js expression>`,
+    permissionRequired: 0,
+    default: {
+        lock: true,
+        permissionToUnlock: 5
+    },
     args: true,
     category: 'fun',
-    execute(message, args, queues, manager) {
-        const script = args.join(' ');
+    execute(message, data) {
+        const script = data.args.join(' ');
         message.channel.send(new Discord.MessageEmbed().setDescription('Running...')).then(msg => {
             try {
                 const begin = process.hrtime();

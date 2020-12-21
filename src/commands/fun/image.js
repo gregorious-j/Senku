@@ -12,8 +12,8 @@ module.exports = {
     cooldown: 3,
     args: true,
     category: 'fun',
-    async execute(message, args, queues) {
-        await gis(args.join(' '), (error, results) => {
+    async execute(message, data) {
+        await gis(data.args.join(' '), (error, results) => {
             if (error) {
                 Utilities.log(error)
             }

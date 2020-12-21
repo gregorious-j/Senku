@@ -1,16 +1,17 @@
 const { prefix } = require('../../../config.json');
 const { ClientStatusMessage } = require('../../util/status');
+const { Utilities } = require('../../util/utilities');
 
 
 module.exports = {
     name: 'stop',
     aliases: ['disconnect', 'leave', 'dc'],
     description: 'Stop the playback of audio and clear the queue',
-    usage: `\`${prefix}stop\``,
+    usage: `stop`,
     permissionRequired: 0,
     args: false,
     category: 'music',
-    execute(message, args, queues) {
+    execute(message, {queues}) {
         const vc = message.member.voice.channel;
         const player = queues.get(message.guild.id);
         if(!player) {
@@ -22,9 +23,9 @@ module.exports = {
         try {
             player.stop();
             queues.delete(message.guild.id);
-            message.react('👍')
+            message.react('👍');
         } catch (error) {
-            
+            Utilities.log(error);
         }
         
     }

@@ -13,7 +13,7 @@ module.exports = {
     cooldown: 60,
     args: false,
     category: 'fun',
-    async execute(message, args, queues, manager) {
+    async execute(message, data) {
         const embed = new Discord.MessageEmbed()
         const inspo = JSON.parse(fs.readFileSync(process.cwd().replace(/\\/g, '/') + "/../quotes.json", "utf-8")).inspo
         const inspoIndex = Utilities.getRandomInt(0, inspo.length)

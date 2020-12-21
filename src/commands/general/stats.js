@@ -11,7 +11,7 @@ module.exports = {
     permissionRequired: 0,
     args: false,
     category: 'general',
-    execute(message, args, queues, manager) {
+    execute(message, data) {
         const embed = new Discord.MessageEmbed()
             .setColor(COLOR_THEME)
             .setDescription('Profiling...')

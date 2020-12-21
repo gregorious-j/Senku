@@ -1,18 +1,26 @@
+/*
+==========================
+====== Senku v0.0.9 ======
+= Gregory Jackson © 2020 =
+==========================
+*/
 const Discord = require("discord.js");
 const {
   defaultPrefix,
   token,
-  owners,
   PORT,
   PASSWORD,
   COLOR_THEME,
+  mongoURI
 } = require("../config.json");
 const LavaClient = require("lavaclient");
+//const { MongoClient } = require("mongodb");
 const { Utilities } = require("./util/utilities");
 const fs = require('fs');
 const client = new Discord.Client({ disableEveryone: true });
 client.commands = new Discord.Collection();
 const queues = new Map();
+//const mdbclient = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
 let leaveCooldown = null;
 
 Utilities.getFiles("./commands").then((files) => {
@@ -41,8 +49,8 @@ const manager = new LavaClient.Manager(nodes, {
 });
 
 client.on("ready", async () => {
-  await manager.init(client.user.id);
-  
+  manager.init(client.user.id);
+  //await mdbclient.connect();
   client.user.setActivity(`?help`, { type: "WATCHING" });
   Utilities.log(`Senku is online`);
 });
@@ -106,62 +114,49 @@ client.on("message", async (message) => {
   }
   const prefix = settings[message.guild.id].prefix;
 
-  if ((!message.content.startsWith(prefix || "<@709209347619684452>")) ||
+  if ((!message.content.startsWith(prefix)) ||
     message.content == prefix)
     return;
 
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
+  const msg_args = message.content.slice(prefix.length).trim().split(/ +/);
+  const commandName = msg_args.shift().toLowerCase();
   const command =
     client.commands.get(commandName) ||
     client.commands.find(
       (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
     );
+    
+  if(!allowCommandToExecute(message, command)) return;
 
-  if(allowCommandToExecute()) return;
-
-  if (command.args && !args.length) {
+  if (command.args && !msg_args.length) {
     return message.channel.send(
       `You didn't provide any arguments, ${message.author}! Use \`${prefix}help [command]\` to see the arguments for that command.`
     );
   }
-
-  if (getPermissionLevel(message.member) < command.permissionRequired)
+  if (Utilities.getPermissionLevel(message.member) < command.permissionRequired)
     return message.reply(`You do not have permission to use this command!`);
-
   try {
-    command.execute(message, args, queues, manager);
+    const data = {
+      args: msg_args,
+      queues: queues,
+      manager: manager,
+      //mongodb: mdbclient
+    }
+    command.execute(message, data);
   } catch (error) {
     console.error(error);
     message.reply(`there was an error trying to execute that command!`);
   }
 });
 
-let getPrefix = (guildId) => {
-  const prefixes = JSON.parse(fs.readFileSync('../prefixes.json', 'utf8'));
-  if(!prefixes[guildId]) {
-    prefixes[guildId] = {
-      prefix: defaultPrefix
-    }
-  }
-  return prefixes[guildId].prefix
-}
-
-let getPermissionLevel = (member) => {
-  if (owners[0] == member.user.id) return 5;
-  if (owners.includes(member.user.id)) return 4;
-  if (member.guild.ownerID == member.id) return 3;
-  if (member.hasPermission("MANAGE_GUILD")) return 2;
-  if (member.hasPermission("MANAGE_MESSAGES")) return 1;
-  return 0;
-};
-
 let allowCommandToExecute = (message, command) => {
   if (!command) return false;
   if (command.disabled) return false;
-  if (command.guildLock) {
-    if(!command.guildLock.includes(message.guild.id)) return false;
-  }
+  if (Utilities.isCommandLocked(message, command.name)) {
+    message.reply('this command needs to be unlocked by a server admin')
+    return false;
+  };
+  return true;
 } 
 
 client.login(token);

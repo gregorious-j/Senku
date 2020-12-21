@@ -5,13 +5,13 @@ module.exports = {
     name: 'repeat',
     aliases: ['loop'],
     description: `Put the current track on or off repeat`,
-    usage: `\`${prefix}repeat\``,
+    usage: `repeat`,
     permissionRequired: 0,
     args: false,
     category: 'music',
-    async execute(message, args, queues) {
+    async execute(message, data) {
         const vc = message.member.voice.channel
-        const player = queues.get(message.guild.id)
+        const player = data.queues.get(message.guild.id)
         if(!player) {
             return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, there is no track to repeat!`)
         }

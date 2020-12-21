@@ -5,11 +5,11 @@ module.exports = {
     name: 'skip',
     aliases: ['next', 'goto'],
     description: 'Skip to the specified track. If no queue position is specified, Senku will skip to the next track',
-    usage: `\`${prefix}skip <position>`,
+    usage: `skip <position>`,
     permissionRequired: 0,
     args: false,
     category: 'music',
-    execute(message, args, queues) {
+    execute(message, {queues, args}) {
         const vc = message.member.voice.channel
         const player = queues.get(message.guild.id)
         if(!player) {

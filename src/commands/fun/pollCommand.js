@@ -16,8 +16,8 @@ module.exports = {
     cooldown: 60,
     args: true,
     category: 'fun',
-    async execute(message, args, queues, manager) {
-        const parameters = args.join(' ').split(',')
+    async execute(message, data) {
+        const parameters = data.args.join(' ').split(',')
         const maxOptions = 10
         const defaultTime = 60000
         let inLine = false;

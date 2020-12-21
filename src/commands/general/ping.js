@@ -9,7 +9,7 @@ module.exports = {
     cooldown: 5,
     args: false,
     category: 'general',
-    async execute(message, args, queues) {
+    async execute(message, data) {
         let botMsg = await message.channel.send("〽️ Pinging")
         botMsg.edit({
             embed: {

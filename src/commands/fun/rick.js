@@ -37,7 +37,7 @@ module.exports = {
     permissionRequired: 0,
     args: false,
     category: 'fun',
-    execute(message, args, queues, manager) {
+    execute(message, data) {
         let whichRick = Utilities.getRandomInt(0, pickles.length);
         message.channel.send("here is funny pickle ric k", {
         files: [{

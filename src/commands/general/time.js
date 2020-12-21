@@ -8,7 +8,7 @@ module.exports = {
     permissionRequired: 0,
     args: false,
     category: 'general',
-    execute(message, args, queues) {
+    execute(message, data) {
         message.channel.send('It\'s ' + Utilities.getTime() + '.')
     }
 }

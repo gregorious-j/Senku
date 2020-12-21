@@ -10,8 +10,8 @@ module.exports = {
     cooldown: 2,
     args: false,
     category: 'music',
-    async execute(message, args, queues) {
-        const player = queues.get(message.guild.id)
+    async execute(message, data) {
+        const player = data.queues.get(message.guild.id)
         if (!player) return new ClientStatusMessage(message, 'ERROR', `There is no active stream.`)
         player.displayNowPlaying()
     }

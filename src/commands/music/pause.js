@@ -9,9 +9,9 @@ module.exports = {
     permissionRequired: 0,
     args: false,
     category: 'music',
-    async execute(message, args, queues) {
+    async execute(message, data) {
         const vc = message.member.voice.channel
-        const player = queues.get(message.guild.id)
+        const player = data.queues.get(message.guild.id)
         if(!player) {
             return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, there is no player to pause!`)
         }

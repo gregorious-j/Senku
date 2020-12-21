@@ -1,10 +1,10 @@
-const { timeOptions } = require('../../config.json')
+const { timeOptions, owners, defaultPrefix } = require('../../config.json')
 const toTime = require("to-time");
 const chalk = require('chalk');
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 const clog = console.log;
-
+const fs = require('fs');
 class Utilities {
 
     static log(message) {
@@ -77,7 +77,57 @@ class Utilities {
             }
         }
     }
-    
+
+    static getPermissionLevel(member) {
+        if (owners[0] == member.user.id) return 5;
+        if (owners.includes(member.user.id)) return 4;
+        if (member.guild.ownerID == member.id) return 3;
+        if (member.hasPermission("MANAGE_GUILD")) return 2;
+        if (member.hasPermission("MANAGE_MESSAGES")) return 1;
+        return 0;
+    }
+
+    static isCommandLocked(message, commandName) {
+        const settings = JSON.parse(fs.readFileSync('../guildsettings.json', 'utf8'));
+        const id = message.guild.id;
+        if(!settings[id]) {
+            settings[id] = {
+                prefix: defaultPrefix,
+                lockedCommands: this.getDefaultLockedCommands(message.client)
+            } 
+            this.writeToSettings(settings);
+        } else if(!settings[id].lockedCommands) {
+            settings[id]["lockedCommands"] = this.getDefaultLockedCommands(message.client);
+            this.writeToSettings(settings);
+        }
+        return settings[id].lockedCommands.includes(commandName);
+    }
+
+    static writeToSettings(obj) {
+        fs.writeFile(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", JSON.stringify(obj), err => {
+            if(err) {
+                console.log(err)
+                return new ClientStatusMessage(message, 'ERROR', 'Error writing to file');
+            }
+        })
+    }
+
+    static getDefaultLockedCommands(client) {
+        const { commands } = client;
+        let lockedCommands = [];
+        commands.forEach(c => {
+            if(c.default) {
+                if(c.default.lock) lockedCommands.push(c.name);
+            }
+        })
+        return lockedCommands;
+    }
+
+    static getGuildSettings(id) {
+        const settings = JSON.parse(fs.readFileSync('../guildsettings.json', 'utf8'));
+        return settings[id];
+    }
+
     static getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);

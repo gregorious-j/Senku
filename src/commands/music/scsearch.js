@@ -9,17 +9,17 @@ module.exports = {
     name: 'searchsc',
     aliases: ['sc'],
     description: `Search for music in SoundCloud with search terms`,
-    usage: `\`${prefix}searchsc <search terms>\``,
+    usage: `searchsc <search terms>`,
     permissionRequired: 0,
     args: true,
     category: 'music',
-    async execute(message, args, queues, manager) {
+    async execute(message, data) {
         const numOfResults = 6
-        const query = args.join(' ')
-        if (!manager) this.lavaplayer = await manager.create(message.guild.id)
+        const query = data.args.join(' ')
+        if (!data.manager) this.lavaplayer = await data.manager.create(message.guild.id)
         let results
         try {
-            results = await manager.search("scsearch:" + query)
+            results = await data.manager.search("scsearch:" + query)
         } catch (error) {
             return new ClientStatusMessage(message, 'ERROR', error)
         }

@@ -9,9 +9,9 @@ module.exports = {
     permissionRequired: 0,
     args: false,
     category: 'music',
-    execute(message, args, queues) {
+    execute(message, data) {
         const vc = message.member.voice.channel
-        const player = queues.get(message.guild.id)
+        const player = data.queues.get(message.guild.id)
         if(!player) {
             return new ClientStatusMessage(message, 'ERROR', `There is no active stream.`)
         }

@@ -85,7 +85,7 @@ class QueueWidget {
 
             const collector = msg.createReactionCollector(this.filter, { time: this.timeActive })
             collector.on('collect', async (reaction, user) => {
-                
+                console.log(reaction)
                 const userReactions = msg.reactions.cache.filter(reaction => reaction.users.cache.has(this.msg.author.id));
                 try {
                     for (const reaction of userReactions.values()) {
@@ -122,7 +122,6 @@ class QueueWidget {
                         msg.edit(newEmbed);
                         break;
                     }
-
                 }
             
 

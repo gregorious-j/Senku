@@ -10,8 +10,8 @@ module.exports = {
     permissionRequired: 0,
     args: true,
     category: 'fun',
-    execute(message, args, queues, manager) {
-        const query = urban(args.join(' '));
+    execute(message, data) {
+        const query = urban(data.args.join(' '));
         query.first(json => {
             if(json) {
                 try {
