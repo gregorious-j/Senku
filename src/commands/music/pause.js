@@ -3,7 +3,6 @@ const { ClientStatusMessage } = require('../../util/status')
 
 module.exports = {
     name: 'pause',
-    aliases: ['p'],
     description: `Pause the current track`,
     usage: `\`${prefix}pause\``,
     permissionRequired: 0,

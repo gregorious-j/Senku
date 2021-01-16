@@ -34,26 +34,27 @@ class Queue {
             Utilities.log(`Attempting to lookup and add track(s) to the queue...`)
             let humanTime = '0s'
             let timeOffset
-            let shuffle = false
             let results
             this.args = args.join(' ')
             try {
                 timeOffset = toTime(humanTime).ms()
             } catch (e) {
                 reject();
-                return new ClientStatusMessage(message, 'ERROR', `The start time was not given in a supported format. Use \`?help play\` for more information.`)
+                return message.channel.send(new ClientStatusMessage('ERROR', `The start time was not given in a supported format. Use \`?help play\` for more information.`).create());
             }
             const playlistPattern = /^.*(list=|sets|album)([^#\&\?\/]*).*/gi;
             if (playlistPattern.test(this.args)) {
-                this.addPlaylist(shuffle).then(resolve => {
+                this.addPlaylist().then(resolve => {
                     success(this);
+                }, rej => {
+                    reject();
                 })
             } else {
                 try {
                     let query = (isUrl(this.args) ? "" : "ytsearch:") + this.args;
                     results = await this.lavaplayer.manager.search(query);
                 } catch (error) {
-                    return console.error(error);
+                    return console.log(error);
                 }
                 if (!results.tracks[0]) {
                     Utilities.log('No Matches');
@@ -78,7 +79,7 @@ class Queue {
         });
     }
 
-    async addPlaylist(shuffle) {
+    async addPlaylist() {
         return new Promise(async (success, reject) => {
             const ytPattern = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.?be)\/.+$/;
             let results;
@@ -86,27 +87,39 @@ class Queue {
                 const playlistCode = this.args.split('list=')[1];
                 results = await this.lavaplayer.manager.search('https://www.youtube.com/playlist?list=' + playlistCode);
             } else {
-                results = await this.lavaplayer.manager.search(this.args)
+                try {
+                    results = await this.lavaplayer.manager.search(this.args)
+                } catch (error) {
+                    this.message.channel.send(new ClientStatusMessage('ERROR', 'Error loading tracks').create());
+                    reject();
+                }
             }
-
-            const { tracks, playlistInfo } = results;
-            if(!results) reject();
-            if (tracks) {
-                tracks.forEach((e, i) => {
-                    this.tracks.push(new Track(e.track, e.info, 0, this.message.author, playlistInfo));
-                });
-
-                Utilities.log(`Added ${tracks.length} tracks to ${this.message.guild.name} [${this.message.guild.id}]`)
-                const embed = new Discord.MessageEmbed()
-                    .setTitle(`Added ${shuffle ? 'Shuffled' : ''} Playlist`)
-                    .setColor(COLOR_THEME)
-                    .setDescription(`[${playlistInfo.name}](${this.args}) — \`${tracks.length}\` track playlist`)
-                this.message.channel.send(embed);
-                Utilities.log(`Finished adding tracks to the queue`);
-                
-                if (shuffle) this.shuffle();
-
-                success();
+            // results is returned by Lavalink, and the property loadType is used to determine if the playlist loaded
+            switch(results.loadType) {
+                case 'PLAYLIST_LOADED': {
+                    const { tracks, playlistInfo } = results; 
+                    tracks.forEach((e, i) => {
+                        this.tracks.push(new Track(e.track, e.info, 0, this.message.author, playlistInfo));
+                    });
+                    Utilities.log(`Added ${tracks.length} tracks to ${this.message.guild.name} [${this.message.guild.id}]`)
+                    const embed = new Discord.MessageEmbed()
+                        .setTitle(`Added Playlist`)
+                        .setColor(COLOR_THEME)
+                        .setDescription(`[${playlistInfo.name}](${this.args}) — \`${tracks.length}\` track playlist`)
+                    this.message.channel.send(embed);
+                    Utilities.log(`Finished adding tracks to the queue`);
+                    success();
+                }
+                case 'LOAD_FAILED': {
+                    if(results.exception) {
+                        this.message.channel.send(new ClientStatusMessage('ERROR', results.exception.message).create());
+                        reject();
+                    }
+                }
+                default: {
+                    this.message.channel.send(new ClientStatusMessage('ERROR', 'Error loading tracks').create());
+                    reject();
+                }
             }
         });
     }                       
@@ -143,7 +156,7 @@ class Queue {
             }
         } catch (error) {
             Utilities.log(error);
-            return new ClientStatusMessage(this.message, 'ERROR', 'Unable to start playback');
+            return message.channel.send(new ClientStatusMessage('ERROR', 'Unable to start playback').create());
         }
     }
 
@@ -162,7 +175,7 @@ class Queue {
 
     stop() {
         if (!this.voiceChannel) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't play something without joining a voice channel.`)
+            return message.channel.send(new ClientStatusMessage('ERROR', `<@${message.member.id}>, You can't play something without joining a voice channel.`).create())
         }
         this.lavaplayer.disconnect(true)
         this.atEnd = false
@@ -182,7 +195,7 @@ class Queue {
                 this.play(this.tracks[this.head], this.widget ? false : showNP);
             } 
         } else {
-            if (pos + 1 > this.tracks.length || pos < 0) return new ClientStatusMessage(this.message, 'ERROR', 'Cannot skip to that track.');
+            if (pos + 1 > this.tracks.length || pos < 0) return message.channel.send(new ClientStatusMessage('ERROR', 'Cannot skip to that track.').create());
             this.tracks[this.head].isPlaying(false);
             this.head = pos;
             const track = this.tracks[this.head];
@@ -215,7 +228,7 @@ class Queue {
 
 
     setVolume(vol = 100) {
-        if (vol > 100 || vol < 1) return new ClientStatusMessage(this.message, 'ERROR', 'Volume out of bounds. A valid volume is between 1 and 100.');
+        if (vol > 100 || vol < 1) return message.channel.send(new ClientStatusMessage('ERROR', 'Volume out of bounds. A valid volume is between 1 and 100.').create());
         this.lavaplayer.setVolume(vol).then(() => {
             this.volume = vol;
             Utilities.log(`Changing volume in ${this.message.guild.id}`);
@@ -226,14 +239,14 @@ class Queue {
 
     seek(time) {
         const track = this.tracks[this.head];
-        if (this.atEnd) return new ClientStatusMessage(this.message, 'ERROR', 'No track playing');
-        if (!track.info.isSeekable) return new ClientStatusMessage(this.message, 'ERROR', 'Track is not seekable');
+        if (this.atEnd) return message.channel.send(new ClientStatusMessage('ERROR', 'No track playing').create());
+        if (!track.info.isSeekable) return message.channel.send(new ClientStatusMessage('ERROR', 'Track is not seekable').create());
         let time_ms;
         time_ms = Utilities.to_ms(time);
 
-        if (!time_ms) return new ClientStatusMessage(this.message, 'ERROR', 'Format not supported');
+        if (!time_ms) return message.channel.send(new ClientStatusMessage('ERROR', 'Format not supported').create());
 
-        if (time_ms > track.lengthMs || time_ms < 0) return new ClientStatusMessage(this.message, 'ERROR', `Seek out of bounds`);
+        if (time_ms > track.lengthMs || time_ms < 0) return message.channel.send(new ClientStatusMessage('ERROR', `Seek out of bounds`).create());
 
         if (time_ms == 0) {
             return this.play(track, true);
@@ -248,7 +261,6 @@ class Queue {
     }
 
     displayNowPlaying(forcedTime = 'none') {
-
         const track = this.tracks[this.head];
         const trackLength = track.lengthMs;
         const barLength = 26;
@@ -263,7 +275,7 @@ class Queue {
                 \`Live 🔴\`\n${this.repeat ? "🔁 - Repeat on" : ""}`)
         } else {
             embed.setDescription(`\`${this.head + 1}:\` [${track.title}](${track.uri})${track.playlistData ? `\nin **${track.playlistData.name}**` : ``} 
-                \`${Utilities.format(currentTime)}\`${this.progressBar(barLength, trackLength, currentTime)}\`${Utilities.format(trackLength)}\`\n${this.repeat ? "🔁 - Repeat on" : ""}`)
+                \`${Utilities.format(currentTime)}\`${Utilities.progressBar(barLength, trackLength, currentTime)}\`${Utilities.format(trackLength)}\`\n${this.repeat ? "🔁 - Repeat on" : ""}`)
         }
         this.message.channel.send(embed)
     }
@@ -290,7 +302,7 @@ class Queue {
             let tracksRemoved = '';
             let trackNums = [];
             let tracks = args.join(' ').split(',');
-            if (tracks.length > 50) return new ClientStatus(this.message, 'ERROR', 'Too many tracks to remove!');
+            if (tracks.length > 50) return message.channel.send(new ClientStatusMessage('ERROR', 'Too many tracks to remove!').create());
             tracks.forEach((e, i) => {
                 trackNums.push(parseInt(e));
             })
@@ -342,23 +354,6 @@ class Queue {
     setHead(pos) {
         this.head = pos;
     }
-
-    progressBar(barLength, trackLength, time) {
-        const delta = Math.round((time / trackLength) * barLength);
-        let bar = '';
-        for (let i = 0; i <= barLength; i++) {
-            if (i == 0 && delta != 0) bar += '⎹';
-            if (i == delta) {
-                bar += '⬤';
-            } else if (i == barLength && delta != barLength) {
-                bar += '⎸';
-            } else {
-                bar += '═';
-            }
-        }
-        return bar;
-    }
 }
-
 
 module.exports = { Queue }

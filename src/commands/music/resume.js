@@ -3,7 +3,6 @@ const { ClientStatusMessage } = require('../../util/status')
 
 module.exports = {
     name: 'resume',
-    aliases: ['r'],
     description: `Resume the current track`,
     usage: `resume`,
     permissionRequired: 0,

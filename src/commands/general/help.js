@@ -20,7 +20,7 @@ module.exports = {
          }
         }
         const prefix = settings[message.guild.id].prefix;
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.MessageEmbed();
         const { commands } = message.client;
 
         // Return formatted list of all commands in the specified category
@@ -72,7 +72,7 @@ module.exports = {
         if (!command) {
             return message.reply('that\'s not a valid command!');
         }
-        if(Utilities.getPermissionLevel(message.member) <= command.permissionRequired) {
+        if(Utilities.getPermissionLevel(message.member) < command.permissionRequired) {
             embed.setTitle(command.name).setDescription('You do not have permission to use this command.');
             return message.reply(embed);
         }

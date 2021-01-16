@@ -5,7 +5,7 @@ const { Utilities } = require('../../util/utilities')
 
 module.exports = {
     name: 'play',
-    aliases: ['add'],
+    aliases: ['add', 'p'],
     description: `Play a music with search terms (YouTube by default) or a link. Supports YouTube, Soundcloud, Bandcamp, and Twitch.`,
     usage: `play <search terms or link>`,
     permissionRequired: 0,
@@ -27,7 +27,6 @@ module.exports = {
             } else {
                 queue.add(data.args, message);
             }
-        
         }
     }
 }

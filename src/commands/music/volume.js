@@ -17,19 +17,19 @@ module.exports = {
         const vc = message.member.voice.channel;
         const player = data.queues.get(message.guild.id);
         if(!player) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, there is no active player.`)
+            return new ClientStatusMessage(message.channel, 'ERROR', `<@${message.member.id}>, there is no active player.`)
         }
         if (vc != player.getVoiceChannel()) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't adjust this player's volume without joining the correct voice channel.`);
+            return new ClientStatusMessage(message.channel, 'ERROR', `<@${message.member.id}>, You can't adjust this player's volume without joining the correct voice channel.`);
         }
         if(!data.args[0]) {
-            return new ClientStatusMessage(message, 'CUSTOM', `The volume is at \`${player.volume}%\``, `Volume`, COLOR_THEME);
+            return new ClientStatusMessage(message.channel, 'CUSTOM', `The volume is at \`${player.volume}%\``, `Volume`, COLOR_THEME);
         } else {
             let vol = parseInt(data.args[0]);
             if(vol) {
                 player.setVolume(vol);
             }  else {
-                return new ClientStatusMessage(message, 'ERROR', `Please enter a valid number.`)
+                return new ClientStatusMessage(message.channel, 'ERROR', `Please enter a valid number.`)
             }
         }
     }

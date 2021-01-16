@@ -32,9 +32,9 @@ module.exports = {
                 const settings = require('../../../guildsettings.json');
                 settings[message.guild.id].lockedCommands.push(command.name); 
                 const locked = settings[message.guild.id].lockedCommands;
-                Utilities.writeToSettings(settings);
-                return new ClientStatusMessage(message, 'CUSTOM', `\`${command.name}\` locked.\n\n**Commands locked:** 
-                    ${locked.map(command => `\`${command}\``).join(', ')}`, 'Settings', '#40f76b')
+                Utilities.writeToFile(settings, 'guildsettings.json');
+                return message.channel.send(new Discord.MessageEmbed().setTitle('Settings').setColor('#40f76b')
+                    .setDescription(`\`${command.name}\` locked.`).addField('Commands Locked',`${locked.map(command => `\`${command}\``).join(', ')}`).setTimestamp(Date.now()))
             } else {
                 return message.channel.send(`${message.author}, you do not have permission to lock \`${command.name}\``);
             }

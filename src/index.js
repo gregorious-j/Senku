@@ -1,27 +1,22 @@
-/*
-==========================
-====== Senku v0.0.9 ======
-= Gregory Jackson © 2020 =
-==========================
-*/
 const Discord = require("discord.js");
 const {
   defaultPrefix,
   token,
   PORT,
   PASSWORD,
-  COLOR_THEME,
-  mongoURI
+  COLOR_THEME
 } = require("../config.json");
+
 const LavaClient = require("lavaclient");
-//const { MongoClient } = require("mongodb");
 const { Utilities } = require("./util/utilities");
 const fs = require('fs');
+const { ClientStatusMessage } = require("./util/status");
 const client = new Discord.Client({ disableEveryone: true });
 client.commands = new Discord.Collection();
 const queues = new Map();
-//const mdbclient = new MongoClient(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true });
+const polls = new Map();
 let leaveCooldown = null;
+const xpPerCommand = 5;
 
 Utilities.getFiles("./commands").then((files) => {
   files.forEach((file) => {
@@ -50,8 +45,7 @@ const manager = new LavaClient.Manager(nodes, {
 
 client.on("ready", async () => {
   manager.init(client.user.id);
-  //await mdbclient.connect();
-  client.user.setActivity(`?help`, { type: "WATCHING" });
+  client.user.setActivity(`Dr. Stone Season 2 Episode 1`, { type: "STREAMING" });
   Utilities.log(`Senku is online`);
 });
 
@@ -140,13 +134,33 @@ client.on("message", async (message) => {
       args: msg_args,
       queues: queues,
       manager: manager,
-      //mongodb: mdbclient
+      polls: polls
     }
     command.execute(message, data);
   } catch (error) {
     console.error(error);
     message.reply(`there was an error trying to execute that command!`);
   }
+
+  const accounts = Utilities.readFile('accounts.json');
+  if(!accounts[message.author.id]) {
+    accounts[message.author.id] = {
+        coins: 0,
+        xp: 0,
+        level: 1
+    }
+    Utilities.writeToFile(accounts, 'accounts.json');
+  }
+  if(command.name != 'account') {
+    accounts[message.author.id].xp += xpPerCommand;
+  }
+  if(accounts[message.author.id].xp >= accounts[message.author.id].level * 100 * 2) {
+    accounts[message.author.id].xp = 0;
+    message.channel.send(new ClientStatusMessage('CUSTOM', `<@${message.author.id}> has leveled up! \`${accounts[message.author.id].level}\` → \`${accounts[message.author.id].level+1}\`\nEarned \`${100 * accounts[message.author.id].level}₭\``, 'Level Up', '#e61e5d').create());
+    accounts[message.author.id].level += 1;
+    accounts[message.author.id].coins += 100 * accounts[message.author.id].level-1;
+  }
+  Utilities.writeToFile(accounts, 'accounts.json');
 });
 
 let allowCommandToExecute = (message, command) => {

@@ -10,7 +10,7 @@ module.exports = {
     args: false,
     category: 'general',
     async execute(message, data) {
-        const settings = Utilities.getGuildSettings(message.guild.id);
+        const settings = Utilities.getGuildSettings(message);
         const embed = new Discord.MessageEmbed().setTitle('Settings');
         for(field in settings) {
             console.log(field);

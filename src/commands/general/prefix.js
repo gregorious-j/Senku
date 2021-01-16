@@ -1,34 +1,26 @@
 const Discord = require('discord.js')
 const fs = require('fs')
 const { ClientStatusMessage } = require('../../util/status')
+const { Utilities } = require('../../util/utilities')
 
 module.exports = {
     name: 'prefix',
     description: 'Change Senku\'s command prefix. If no new prefix is provided, the prefix will be reset to the default (\`?\`)',
     usage: `prefix <new prefix>`,
     permissionRequired: 2,
-    args: false,
+    args: true,
     category: 'general',
     execute(message, data) {
-        const prefixes = JSON.parse(fs.readFileSync(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", 'utf8'));
-        if(!data.args[0]) {
-            if(!prefixes[message.guild.id]) {
-                prefixes[message.guild.id] = {
-                    prefix: defaultPrefix
-                }
-            }
-            return new ClientStatusMessage(message, 'CUSTOM', `The current prefix is \`${prefixes[message.guild.id].prefix}\``, 'Prefix')
-        }
-        prefixes[message.guild.id] = {
-            prefix: data.args.join(' ')
-        }
-        fs.writeFile(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", JSON.stringify(prefixes), err => {
+        const settings = Utilities.getGuildSettings(message);
+        settings.prefix = data.args.join(' ');
+        const globalSettings = require('../../../guildsettings.json');
+        globalSettings[message.guild.id] = settings;
+        fs.writeFile(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", JSON.stringify(globalSettings), err => {
             if(err) {
                 console.log(err)
-                return new ClientStatusMessage(message, 'ERROR', 'Error writing to file');
+                return message.channel.send(new ClientStatusMessage('ERROR', 'Error writing to file').create());
             }
-            console.log(JSON.stringify(prefixes));
         })
-        return new ClientStatusMessage(message, 'CUSTOM', `Successfully changed the prefix to \`\`\`${prefixes[message.guild.id].prefix}\`\`\``, 'Prefix changed')   
+        return message.channel.send(new ClientStatusMessage('CUSTOM', `Successfully changed the prefix to \`\`\`${settings.prefix}\`\`\``, 'Prefix changed').create())   
     }
 }

@@ -32,14 +32,14 @@ module.exports = {
                 const settings = require('../../../guildsettings.json');
                 const filtered = settings[message.guild.id].lockedCommands.filter(name => name != command.name); 
                 settings[message.guild.id].lockedCommands = filtered;
-                Utilities.writeToSettings(settings);
-                return new ClientStatusMessage(message, 'CUSTOM', `\`${command.name}\` has been unlocked.\n\n**Commands locked:** 
-                    ${filtered.map(command => `\`${command}\``).join(', ')}`, 'Settings', '#40f76b')
+                Utilities.writeToFile(settings, 'guildsettings.json');
+                return message.channel.send(new Discord.MessageEmbed().setTitle('Settings').setColor('#40f76b')
+                    .setDescription(`\`${command.name}\` locked.`).addField('Commands Locked',`${filtered[0] ? filtered.map(command => `\`${command}\``).join(', ') : 'No commands are disabled.'}`).setTimestamp(Date.now()))
             } else {
-                return message.channel.send(`${message.author}, you do not have permission to unlock \`${command.name}\``);
+                return message.channel.send(`${message.author}, you do not have permission to enable \`${command.name}\``);
             }
         } else {
-            return message.channel.send(`${message.author}, \`${command.name}\` is not locked`);
+            return message.channel.send(`${message.author}, \`${command.name}\` is not disabled`);
         }
        
     }

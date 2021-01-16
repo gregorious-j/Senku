@@ -2,15 +2,13 @@ const { COLOR_THEME } = require('../../config.json');
 const Discord = require('discord.js');
 
 class ClientStatusMessage {
-    constructor(message, type = 'ERROR', reason = `uhhh <@130317861183946753> wtf`, title, color = COLOR_THEME) {
-        this.message = message;
+    constructor(type = 'ERROR', reason = `uhhh <@130317861183946753> wtf`, title, color = COLOR_THEME) {
         this.reason = reason;
         this.type = type;
         this.title = title;
         this.color = color;
-        this.send();
     }
-    send() {
+    create() {
         const embed = new Discord.MessageEmbed().setTimestamp(Date.now()).setColor(COLOR_THEME);
         if(this.type == 'ERROR') {
             embed.setColor('#ff0000');
@@ -25,7 +23,7 @@ class ClientStatusMessage {
             embed.setTitle(this.title);
         }
         embed.setDescription(this.reason);
-        return this.message.channel.send(embed);
+        return embed;
     }
 }
 module.exports = { ClientStatusMessage };

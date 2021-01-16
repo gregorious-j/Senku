@@ -13,12 +13,12 @@ module.exports = {
         const vc = message.member.voice.channel
         const player = data.queues.get(message.guild.id)
         if(!player) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, there is no queue to shuffle.`)
+            return message.channel.send(new ClientStatusMessage('ERROR', `<@${message.member.id}>, there is no queue to shuffle.`).create());
         }
         if (vc != player.getVoiceChannel()) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't shuffle the queue without joining the correct voice channel.`)
+            return message.channel.send(new ClientStatusMessage('ERROR', `<@${message.member.id}>, You can't shuffle the queue without joining the correct voice channel.`).create());
         }
         player.shuffle();
-        return new ClientStatusMessage(message, 'CUSTOM', `<@${message.author.id}> shuffled the queue`, 'Shuffle', COLOR_THEME)
+        return message.channel.send(new ClientStatusMessage('CUSTOM', `<@${message.author.id}> shuffled the queue`, 'Shuffle', COLOR_THEME).create());
     }
 }

@@ -13,10 +13,10 @@ module.exports = {
         const vc = message.member.voice.channel
         const player = data.queues.get(message.guild.id)
         if(!player) {
-            return new ClientStatusMessage(message, 'ERROR', `There is no active stream.`)
+            return new ClientStatusMessage(message.channel, 'ERROR', `There is no active stream.`)
         }
         if (vc != player.getVoiceChannel()) {
-            return new ClientStatusMessage(message, 'ERROR', `<@${message.member.id}>, You can't play something without joining a voice channel.`)
+            return new ClientStatusMessage(message.channel, 'ERROR', `<@${message.member.id}>, You can't play something without joining a voice channel.`)
         }
         player.back()
     }

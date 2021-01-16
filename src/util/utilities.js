@@ -88,28 +88,25 @@ class Utilities {
     }
 
     static isCommandLocked(message, commandName) {
-        const settings = JSON.parse(fs.readFileSync('../guildsettings.json', 'utf8'));
-        const id = message.guild.id;
-        if(!settings[id]) {
-            settings[id] = {
-                prefix: defaultPrefix,
-                lockedCommands: this.getDefaultLockedCommands(message.client)
-            } 
-            this.writeToSettings(settings);
-        } else if(!settings[id].lockedCommands) {
-            settings[id]["lockedCommands"] = this.getDefaultLockedCommands(message.client);
-            this.writeToSettings(settings);
+        const settings = this.getGuildSettings(message);
+        if(!settings.lockedCommands) {
+            settings["lockedCommands"] = this.getDefaultLockedCommands(message.client);
+            this.writeToFile(settings, 'guildsettings.json');
         }
-        return settings[id].lockedCommands.includes(commandName);
+        return settings.lockedCommands.includes(commandName);
     }
 
-    static writeToSettings(obj) {
-        fs.writeFile(process.cwd().replace(/\\/g, '/') + "/../guildsettings.json", JSON.stringify(obj), err => {
+    static writeToFile(obj, file) {
+        fs.writeFile(process.cwd().replace(/\\/g, '/') + `/../${file}`, JSON.stringify(obj), err => {
             if(err) {
                 console.log(err)
-                return new ClientStatusMessage(message, 'ERROR', 'Error writing to file');
+                return message.channel.send(new ClientStatusMessage('ERROR', 'Error writing to file').create());
             }
         })
+    }
+
+    static readFile(file) {
+        return JSON.parse(fs.readFileSync(`../${file}`, 'utf8'));
     }
 
     static getDefaultLockedCommands(client) {
@@ -123,15 +120,38 @@ class Utilities {
         return lockedCommands;
     }
 
-    static getGuildSettings(id) {
+    static getGuildSettings(message) {
         const settings = JSON.parse(fs.readFileSync('../guildsettings.json', 'utf8'));
-        return settings[id];
+        if(!settings[message.guild.id]) {
+            settings[message.guild.id] = {
+                prefix: defaultPrefix,
+                lockedCommands: this.getDefaultLockedCommands(message.client)
+            } 
+            this.writeToFile(settings, 'guildsettings.json');
+        }
+        return settings[message.guild.id];
     }
 
     static getRandomInt(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    static progressBar(barLength, trackLength, time) {
+        const delta = Math.round((time / trackLength) * barLength);
+        let bar = '';
+        for (let i = 0; i <= barLength; i++) {
+            if (i == 0 && delta != 0) bar += '⎹';
+            if (i == delta) {
+                bar += '⬤';
+            } else if (i == barLength && delta != barLength) {
+                bar += '⎸';
+            } else {
+                bar += '═';
+            }
+        }
+        return bar;
     }
 }
 
